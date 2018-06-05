@@ -20,8 +20,6 @@ const Animation = {
             }
 
             if (this.corner > 4) this.corner = 1;
-
-            console.log(this.corner);
         }, 1000)
     },
 
