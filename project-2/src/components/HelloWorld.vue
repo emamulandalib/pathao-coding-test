@@ -10,10 +10,10 @@
           {{column.replace(/_/g, ' ').toUpperCase()}}
         </th>
       </tr>
-      <tr v-for="(obj, rowIdx) in data" :key="rowIdx">
-        <td v-for="(column, colIdx) in columns" :key="colIdx" @click="selectCurrentInput(rowIdx, colIdx)">
+      <tr v-for="(obj, rowIdx) in dataInComponent" :key="rowIdx">
+        <td v-for="(column, colIdx) in columns" :key="colIdx" @click="selectCurrentInput(rowIdx, colIdx, obj[column])">
           {{obj[column]}}
-          <input v-model="obj[column]" style="width: 100%" v-if="colIdx === currentColInputIdx && rowIdx === currentRowInputIdx">
+          <input v-model="currentInputVal" style="width: 100%" v-if="colIdx === currentColInputIdx && rowIdx === currentRowInputIdx">
         </td>
       </tr>
     </table>
@@ -29,16 +29,41 @@ export default {
   },
   data: () => ({
     currentColInputIdx: null,
-    currentRowInputIdx: null
+    currentRowInputIdx: null,
+    currentInputVal: null
   }),
+  computed: {
+    dataInComponent: {
+      get() {
+        return this.data ? this.data : [];
+      },
+      set(v) {
+        console.log(v);
+        return v;
+      }
+    }
+  },
   methods: {
-    selectCurrentInput(rowIdx, colIdx) {
+    selectCurrentInput(rowIdx, colIdx, val) {
       this.currentColInputIdx = colIdx;
       this.currentRowInputIdx = rowIdx;
+      this.currentInputVal = val;
+    },
+    setNewData() {
+      let currentRowData = this.dataInComponent[this.currentRowInputIdx];
+      currentRowData = {
+        ...currentRowData,
+        ...{ [this.columns[this.currentColInputIdx]]: this.currentInputVal }
+      };
+      this.dataInComponent[this.currentRowInputIdx][
+        this.columns[this.currentColInputIdx]
+      ] = this.currentInputVal;
     },
     clearInputSelection() {
+      this.setNewData();
       this.currentColInputIdx = null;
       this.currentRowInputIdx = null;
+      this.currentInputVal = null;
     }
   }
 };
