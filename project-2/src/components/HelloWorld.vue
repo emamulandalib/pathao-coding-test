@@ -1,41 +1,47 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://github.com/vuejs/vue-cli/tree/dev/docs" target="_blank">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank">Twitter</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
-    </ul>
+    <h1>Demo Table</h1>
+    
+    <button v-if="currentColInputIdx != null && currentRowInputIdx != null" @click="clearInputSelection">Save</button>
+    
+    <table>
+      <tr>
+        <th v-for="(column, index) in columns" :key="index">
+          {{column.replace(/_/g, ' ').toUpperCase()}}
+        </th>
+      </tr>
+      <tr v-for="(obj, rowIdx) in data" :key="rowIdx">
+        <td v-for="(column, colIdx) in columns" :key="colIdx" @click="selectCurrentInput(rowIdx, colIdx)">
+          {{obj[column]}}
+          <input v-model="obj[column]" style="width: 100%" v-if="colIdx === currentColInputIdx && rowIdx === currentRowInputIdx">
+        </td>
+      </tr>
+    </table>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: "HelloWorld",
   props: {
-    msg: String
+    data: Array,
+    columns: Array
+  },
+  data: () => ({
+    currentColInputIdx: null,
+    currentRowInputIdx: null
+  }),
+  methods: {
+    selectCurrentInput(rowIdx, colIdx) {
+      this.currentColInputIdx = colIdx;
+      this.currentRowInputIdx = rowIdx;
+    },
+    clearInputSelection() {
+      this.currentColInputIdx = null;
+      this.currentRowInputIdx = null;
+    }
   }
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -53,5 +59,21 @@ li {
 }
 a {
   color: #42b983;
+}
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td,
+th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
 }
 </style>
