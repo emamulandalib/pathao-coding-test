@@ -2,7 +2,7 @@
   <div class="hello">
     <h1>Demo Table</h1>
     
-    <button v-if="currentColInputIdx != null && currentRowInputIdx != null" @click="clearInputSelection">Save</button>
+    <button v-if="currentColInputIdx != null && currentRowInputIdx != null" @click="clearInputSelection" @keyup.enter="clearInputSelection">Save</button>
     
     <table>
       <tr>
@@ -11,9 +11,12 @@
         </th>
       </tr>
       <tr v-for="(obj, rowIdx) in dataInComponent" :key="rowIdx">
-        <td v-for="(column, colIdx) in columns" :key="colIdx" @click="selectCurrentInput(rowIdx, colIdx, obj[column])">
-          {{obj[column]}}
-          <input v-model="currentInputVal" style="width: 100%" v-if="colIdx === currentColInputIdx && rowIdx === currentRowInputIdx">
+        <td v-for="(column, colIdx) in columns" :key="colIdx">
+          <span v-if="obj[column]" @click="selectCurrentInput(rowIdx, colIdx, obj[column])">
+            {{obj[column]}}
+            <input v-model="currentInputVal" style="width: 100%" v-if="colIdx === currentColInputIdx && rowIdx === currentRowInputIdx"
+            @keyup.enter="clearInputSelection">
+          </span>
         </td>
       </tr>
     </table>
