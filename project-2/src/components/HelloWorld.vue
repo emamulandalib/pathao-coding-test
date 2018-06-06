@@ -6,17 +6,14 @@
     
     <table>
       <tr>
-        <th v-for="(column, index) in columns" :key="index">
+        <th v-for="(column, index) in columns" :key="index" @click="sortBy(column)">
           {{column.replace(/_/g, ' ').toUpperCase()}}
         </th>
       </tr>
       <tr v-for="(obj, rowIdx) in dataInComponent" :key="rowIdx">
-        <td v-for="(column, colIdx) in columns" :key="colIdx">
-          <span v-if="obj[column]" @click="selectCurrentInput(rowIdx, colIdx, obj[column])">
-            {{obj[column]}}
-            <input v-model="currentInputVal" style="width: 100%" v-if="colIdx === currentColInputIdx && rowIdx === currentRowInputIdx"
-            @keyup.enter="clearInputSelection">
-          </span>
+        <td v-for="(column, colIdx) in columns" :key="colIdx" @click="selectCurrentInput(rowIdx, colIdx, obj[column])">
+            <span v-if="!(colIdx === currentColInputIdx && rowIdx === currentRowInputIdx)">{{obj[column]}}</span>
+            <input v-model="currentInputVal" style="width: 100%" v-else @keyup.enter="clearInputSelection">
         </td>
       </tr>
     </table>
@@ -26,32 +23,42 @@
 <script>
 export default {
   name: "HelloWorld",
+
   props: {
-    data: Array,
-    columns: Array
+    data: Array
   },
+
   data: () => ({
     currentColInputIdx: null,
     currentRowInputIdx: null,
     currentInputVal: null
   }),
+
   computed: {
     dataInComponent: {
       get() {
         return this.data ? this.data : [];
       },
-      set(v) {
-        console.log(v);
-        return v;
-      }
+      set: v => v
+    },
+    columns() {
+      let cols = [];
+      this.data
+        ? this.data.forEach(element =>
+            Object.keys(element).forEach(el => cols.push(el))
+          )
+        : [];
+      return [...new Set(cols)].sort();
     }
   },
+
   methods: {
     selectCurrentInput(rowIdx, colIdx, val) {
       this.currentColInputIdx = colIdx;
       this.currentRowInputIdx = rowIdx;
       this.currentInputVal = val;
     },
+
     setNewData() {
       let currentRowData = this.dataInComponent[this.currentRowInputIdx];
       currentRowData = {
@@ -62,11 +69,20 @@ export default {
         this.columns[this.currentColInputIdx]
       ] = this.currentInputVal;
     },
+
     clearInputSelection() {
       this.setNewData();
       this.currentColInputIdx = null;
       this.currentRowInputIdx = null;
       this.currentInputVal = null;
+    },
+
+    sortBy(key) {
+      this.dataInComponent.sort((a, b) => {
+        let textA = a[key] ? a[key].toLowerCase() : "";
+        let textB = b[key] ? b[key].toLowerCase() : "";
+        return textA.localeCompare(textB)
+      });
     }
   }
 };
